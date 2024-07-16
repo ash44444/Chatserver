@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { errorMiddleware } from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
+import cors from "cors";
 import { createServer } from "http";
 import { v4 as uuid } from "uuid";
 import cors from "cors";
@@ -25,6 +26,9 @@ import { socketAuthenticator } from "./middlewares/auth.js";
 import userRoute from "./routes/user.js";
 import chatRoute from "./routes/chat.js";
 import adminRoute from "./routes/admin.js";
+import { callbackify } from "util";
+import { allowedNodeEnvironmentFlags } from "process";
+import { Error } from "mongoose";
 
 dotenv.config({
   path: "./.env",
@@ -61,6 +65,25 @@ app.use(cors(corsOptions));
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/chat", chatRoute);
 app.use("/api/v1/admin", adminRoute);
+
+const prodOrigins = [process.env.ORIGIN_1];
+const devOrigin = ["http://localhost:5173/"];
+const allowedOrigins =
+  process.env.NODE_ENV === "production" ? prodOrigins : devOrigin;
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (allowedOrigins.includes(origin)) {
+        console.log(origin, allowedOrigins);
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 
 app.get("/", (req, res) => {
   res.send("Hello World");
