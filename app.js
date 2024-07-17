@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { errorMiddleware } from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
+
 import { createServer } from "http";
 import { v4 as uuid } from "uuid";
 import cors from "cors";
@@ -64,7 +65,8 @@ app.use(cors(corsOptions));
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/chat", chatRoute);
 app.use("/api/v1/admin", adminRoute);
-
+const allowedOrigins =
+  process.env.CLIENT_URL || "https://chatfrontend-one.vercel.app/login";
 app.use(
   cors({
     origin: (origin, callback) => {
