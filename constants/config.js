@@ -1,7 +1,9 @@
 const corsOptions = {
   origin: [
-    "https://chatserver-tqx3.onrender.com"
-"https://chatfrontend-one.vercel.app/login"
+    "http://localhost:5173",
+    "http://localhost:4173",
+    "https://chatfrontend-one.vercel.app/login",
+    process.env.CLIENT_URL,
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
